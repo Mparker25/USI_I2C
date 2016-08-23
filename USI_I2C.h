@@ -48,18 +48,24 @@
 	#define TSTOP	4.0		// Time needed to hold SDA low to be recognized as a STOP condition
 #endif
 
-#ifndef REG_COUNT
-	#define REG_COUNT 15				// Number of Registers for slave device
-#endif
-
-// USER-DEFINED SLAVE ADDRESS
-#define SLAVE_ADDR 0x36 
-
 // PORT A
 #define DIR			DDRA				// Direction 
 #define SCL			0b10000				// Pin 4  [Clock]
 #define SDA 		0b1000000			// Pin 6  [Data]
 #define OVF			0b1000000			// Pin 6  [Overflow Flag]
+
+
+// USER DEFINED MACROS
+
+// USER-DEFINED SLAVE ADDRESS
+#define SLAVE_ADDR 0x36 
+
+#ifndef REG_COUNT
+	#define REG_COUNT 15				// Number of Registers for slave device
+#endif
+
+#define OFF_PERCENTAGE 90				// Percentage of time sensor needs to be off before it registers as off
+#define ON_PERCENTAGE  15				// Percentage of time sensor needs to be on before it registers as on
 
 
 // Type Definitions 
