@@ -380,9 +380,8 @@ uint8_t temp;
 	send:	case(READ):
 		
 				// Check that the register pointer is within bounds before sending out data
-				if (reg_pointer < 10){
-					temp = Registers[reg_pointer];
-					USIDR = temp;
+				if (reg_pointer < REG_COUNT){
+					USIDR = Registers[reg_pointer];
 				}
 				else USIDR = 0xF2;		// Dummy variable to send in case of corruption
 			
@@ -399,7 +398,7 @@ uint8_t temp;
 			case(WRITE):
 		
 				// Check that the register pointer is within bounds before master writes data
-				if (reg_pointer < 10) {
+				if (reg_pointer < REG_COUNT) {
 					Registers[reg_pointer] = data;
 					reg_pointer++;
 				}
@@ -414,128 +413,6 @@ uint8_t temp;
 		}	
 	}
 	
-	
-
-
-	/*switch(current_state){
-		
-		/ * STATE 1::	Address read from bus * /
-		case(ADDRESS):
-			direction = data & 0x01;
-			
-			// ADDRESS MATCHES: Send out acknowledgment
-			if ((data >> 1) == SLAVE_ADDR){			
-				count = 0xE;					
-				SET_SDA_OUTPUT();				
-				SET_SDA_LOW();
-				while(PINA & _BV(PINA6));		
-				next_state = ADDR_ACK;			
-			}
-			
-			// ADDRESS DOESN'T MATCH: Clear the line and reset the state
-			else{
-				SET_SCL_INPUT();				
-				SET_SCL_HIGH();
-				USIDR = 0;						
-				count = 0;
-				resetState();					
-				next_state = ADDRESS;
-			}
-			break;
-		*/
-/*
-		/ * STATE 2:: ACK was sent to Master, Prepare for Master to Read or Write * /
-		case(ADDR_ACK):
-		
-			// If Master is reading, send data out Immediately!
-			if (direction) {
-				SET_SDA_OUTPUT();
-				goto send;
-			}
-			
-			// If Master is writing to device, prepare first write to set Register Pointer
-			next_state = REGADDR;
-			SET_SDA_INPUT();	
-			SET_SDA_HIGH();
-			count = 0;			
-			break;
-		
-		/ * STATE 3:: * /
-		case(WRITE_ACK):
-			SET_SDA_INPUT();
-			SET_SDA_HIGH();
-			count = 0;
-			next_state = WRITE;
-			break;
-			
-			
-		/ * STATE 4:: NACK/ACK from Master to determine if reading continues* /
-		case(READ_ACK):
-			SET_SDA_INPUT();
-			SET_SDA_HIGH();
-			count = 0xE;
-			next_state = READ_MULT;
-			break;
-			
-		/ * STATE 5:: Master is configuring which register to write to * /
-		case(REGADDR):
-			reg_pointer = data;
-			
-			// Prepare the ACK to be sent
-			USIDR = 0x00;
-			count = 0x0E;					// Set the counter for the ACK (Don't clear Start or Stop flags)
-			SET_SDA_OUTPUT();				
-			next_state = WRITE_ACK;
-			break;
-			
-		/ * STATE 6:: * /
-		case(READ_MULT):
-			if (!(data & 0x01)){ // Acknowledgment 
-				reg_pointer++;
-				goto send;
-			}		
-			next_state = ADDRESS;
-			break;
-			
-		/ * STATE 7:: Master is reading from device * /
-send:	case(READ):
-		
-			// Check that the register pointer is within bounds before sending out data
-			if (reg_pointer < 10){
-				temp = Registers[reg_pointer];
-				USIDR = temp;
-			}
-			else USIDR = 0xF2;		// Dummy variable to send in case of corruption
-			
-			SET_SDA_INPUT();
-			SET_SDA_HIGH();
-			SET_SDA_OUTPUT();
-
-			count = 0;
-			next_state = READ_ACK;
-			break;
-			
-			
-		/ * STATE 8:: Master is writing to this device * /
-		case(WRITE):
-		
-			// Check that the register pointer is within bounds before master writes data
-			if (reg_pointer < 10) {
-				Registers[reg_pointer] = data;
-				reg_pointer++;
-			}
-			
-			// Send ACK to confirm that Data has been written
-			USIDR = 0x00;
-			count = 0xE;					
-			SET_SDA_OUTPUT();				
-			next_state = WRITE_ACK;
-			break;	
-		
-	}
-	
-	
-	current_state = next_state;*/
 	SET_COUNT(count); 
  }
 
